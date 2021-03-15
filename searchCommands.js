@@ -26,7 +26,7 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
   
   
   Cypress.Commands.add('hebrewSearchRun',({text,collection,page=''})=>{
-    cy.setLanguageMode('Hebrew')
+    cy.setLanguageMode('English')
     //if the start page
     if(page=='Start'){
       cy.get('[class*="home-logo-holder"]').should('contain','חיפוש ב'+collection)
