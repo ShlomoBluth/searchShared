@@ -25,15 +25,15 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
   })
   
   
-  Cypress.Commands.add('hebrewSearchRun',({text,page=''})=>{
+  Cypress.Commands.add('hebrewSearchRun',({text,collection,page=''})=>{
     cy.setLanguageMode('Hebrew')
     //if the start page
     if(page=='Start'){
-      cy.get('[class*="home-logo-holder"]').should('contain','חיפוש בתנ"ך')
+      cy.get('[class*="home-logo-holder"]').should('contain','חיפוש ב'+collection)
       cy.get('input[id="search_box"]').type(text)
       cy.get('button[id="mobile_search_button"]').click({force:true})
     }else{
-      cy.get('span[class*="inner-header-logo-title"]').should('contain','חיפוש בתנ"ך')
+      cy.get('span[class*="inner-header-logo-title"]').should('contain','חיפוש ב'+collection)
       cy.get('input[class*="search-form-control"]').clear({force:true}).type(text,{force:true})
       cy.get('[class*="fa-search text"]').click({force:true})
     }
