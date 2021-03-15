@@ -90,7 +90,7 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
         cy.get($searchWord).within(()=>{
             //More than 1 word form
             if($searchWord.find('[class*="selectAll"]').length>0){
-                cy.contains('בחר הכל').click() 
+                cy.contains('Select All').click() 
             }
         }).then(()=>{
             cy.get($searchWord).within(()=>{
@@ -103,7 +103,7 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
                                 return false
                             }else{
                                 cy.get($wordForm).click()
-                                cy.document().its('body').find('div.he').within(()=>{
+                                cy.document().its('body').find('#app').within(()=>{
                                     cy.eachSelectedWordFormMatrix().
                                     then(selectedWordFormMatrix=>{
                                         cy.resultPagination({
@@ -123,7 +123,7 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
             cy.get($searchWord).within(()=>{
                 //More than 1 word form
                 if($searchWord.find('[class*="selectAll"]').length>0){
-                    cy.contains('בחר הכל').click() 
+                    cy.contains('Select All').click() 
                 }
             })
         })

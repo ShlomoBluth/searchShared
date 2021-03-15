@@ -29,11 +29,11 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
     cy.setLanguageMode('English')
     //if the start page
     if(page=='Start'){
-      cy.get('[class*="home-logo-holder"]').should('contain','חיפוש ב'+collection)
+      //cy.get('[class*="home-logo-holder"]').should('contain',''חיפוש ב'+collection')
       cy.get('input[id="search_box"]').type(text)
       cy.get('button[id="mobile_search_button"]').click({force:true})
     }else{
-      cy.get('span[class*="inner-header-logo-title"]').should('contain','חיפוש ב'+collection)
+      //cy.get('span[class*="inner-header-logo-title"]').should('contain','חיפוש ב'+collection)
       cy.get('input[class*="search-form-control"]').clear({force:true}).type(text,{force:true})
       cy.get('[class*="fa-search text"]').click({force:true})
     }
@@ -121,7 +121,7 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
   
   Cypress.Commands.add('nomberOfResults',()=>{
     let number
-    cy.document().its('body').find('div.he').within($body=>{
+    cy.document().its('body').find('#app').within($body=>{
       cy.loaderNotExist().then(()=>{
         if($body.find('.result-list').length>0){
           //Results number in the top 
