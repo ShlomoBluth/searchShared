@@ -114,7 +114,7 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
   })
 
   Cypress.Commands.add('loaderNotExist',()=>{
-    cy.document().its('body').find('div.he').within(()=>{
+    cy.document().its('body').find('#app').within(()=>{
       cy.get('[class*="loader"]').should('not.exist')
     })
   })

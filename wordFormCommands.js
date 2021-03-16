@@ -1,18 +1,22 @@
 Cypress.Commands.add('showAllWordForms',()=>{
-    cy.get('[id="word_forms"] > span').click()
+    cy.get('[id="word_forms"] > span').click({force:true})
     //Each word in search
     cy.get('[class="inner-accordion"] > li').each($accordionLi=>{
         cy.get($accordionLi).then(()=>{
             //More than 1 word in search
             if($accordionLi.find('[class="inner-accordion-link"]').length>0){
                 //Open the list of word form of a word
-                cy.get($accordionLi).click()
+                cy.get($accordionLi).within(()=>{
+                    cy.get('[class="inner-accordion-link"]').click({force:true})
+                    cy.get('[class*="inner-accordion-link"]')
+                    .should('have.attr','class','inner-accordion-link selected')
+                })
             }
         }).then(()=>{
             //More word form
             if($accordionLi.find('.morebtn').length>0){
                 cy.get($accordionLi).within(()=>{
-                    cy.get('.morebtn').click()
+                    cy.get('a[class="f gray"]').click({force:true})
                 })
             }
         })
@@ -21,25 +25,31 @@ Cypress.Commands.add('showAllWordForms',()=>{
 
 Cypress.Commands.add('closeAllWordForms',()=>{
     //Each word in search
-    cy.get('[class="inner-accordion"] > li').each($accordionLi=>{
-        cy.get($accordionLi).then(()=>{
+    cy.get('[class="inner-accordion"] > li').each(accordionLi=>{
+        cy.get(accordionLi).within(()=>{
             //More word form
-            if($accordionLi.find('.morebtn').length>0){
-                cy.get($accordionLi).within(()=>{
-                    cy.get('i').click({force:true})
-                })
+            if(accordionLi.find('.morebtn').length>0){
+                cy.get('i').click({force:true})
+                // cy.get(accordionLi).within(()=>{
+                //     cy.get('i').click({force:true})
+                // })
             }
-        }).then(()=>{
+        }).within(()=>{
             //More than 1 word in search
-            if($accordionLi.find('[class="inner-accordion-link"]').length>0){
+            if(accordionLi.find('[class="inner-accordion-link selected"]').length>0){
                 //Close the list of words form of a word
-                cy.get($accordionLi).click({force:true})
+                cy.get('[class="inner-accordion-link selected"]').click({force:true})
+                cy.get('[class="inner-accordion-link selected"]').should('not.exist')
+                cy.get('[class="slide-li"]',{timeout:90000}).should('not.exist')
+                // cy.get(accordionLi).within(()=>{
+                //     cy.get('span').click({force:true})
+                // })
             }
         })
     })
-    cy.get('[id="word_forms"] > span').click()
+    cy.get('[id="word_forms"]').click({force:true})
     cy.get('[id="word_forms"]').should('have.attr','class','f black link')
-    cy.get('[class="inner-accordion-link"]').should('not.exist')
+    cy.get('[class="slide"]',{timeout:90000}).should('not.exist')
     cy.clearInput()
 })
 

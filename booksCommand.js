@@ -1,17 +1,22 @@
 Cypress.Commands.add('showBooks',()=>{
-    cy.get('#books').click()
+    cy.get('#books').click({force:true})
     //Each collection
     cy.get('.inner-accordion-link').each($link=>{
-        cy.get($link).click()
+        cy.get($link).click({force:true}).then(()=>{
+            cy.get($link).should('have.attr','class','inner-accordion-link selected')
+        })
     })
 })
 
 Cypress.Commands.add('closeBooks',()=>{
     //Each collection
     cy.get('.inner-accordion-link').each($link=>{
-        cy.get($link).click()
+        cy.get($link).click({force:true}).then(()=>{
+            cy.get($link).should('have.attr','class','inner-accordion-link')
+        })
     })
-    cy.get('#books').click()
+    cy.get('#books').click({force:true})
+    cy.get('#books').should('have.attr','class','f black link')
     cy.clearInput()
 })
 
