@@ -180,5 +180,44 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
       })
     })
   })
+
+  Cypress.Commands.add('existsInResult',(text)=>{
+    //Recursive function through pages
+    function existsInResults(text){
+      return cy.existsInPageResult(text).then($exists=>{
+        if($exists==true){
+          return true
+        }else{
+          cy.get('[class*="pagination__navigation"]').last().then($lastPage=>{
+            //If last page
+            if($lastPage.attr('class').includes('disabled')){
+              expect($exists).to.be.true
+            }else{
+              //Next page
+              cy.get('[class*="pagination__navigation"]').last().click()
+              return existsInResults(text)
+            }
+          })
+        }
+      })
+    }
+    existsInResults(text)
+  })
+  
+  Cypress.Commands.add('existsInPageResult',(text)=>{
+    let exists=false
+    cy.get('.result-list').within(()=>{
+      //Each bold word in results list
+      cy.get('b').each($b=>{
+        //If found text
+        if($b.text()==text){
+          exists=true
+        }
+      })
+    }).then(()=>{
+      return exists
+    })
+  })
+  
   
   
