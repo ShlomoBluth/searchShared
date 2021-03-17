@@ -25,7 +25,7 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
   })
   
   
-  Cypress.Commands.add('hebrewSearchRun',({text,language,collection})=>{
+  Cypress.Commands.add('searchRun',({text,language,collection})=>{
     cy.setLanguageMode(language)
     cy.get('input[id="search_box"]').type(text)
     cy.get('button[id="mobile_search_button"]').click({force:true})
