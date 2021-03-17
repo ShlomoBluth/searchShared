@@ -139,5 +139,19 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
       return textNumbers
     })
   })
+
+  Cypress.Commands.add('navigateToStartPage',(startPageUrl)=>{
+    function firstPage(){
+      return cy.url().then(url=>{
+        if(url!==startPageUrl){
+          cy.go(-1)
+          return firstPage()
+        }else{
+          cy.url().should('eq',startPageUrl)
+        }
+      })
+    }
+    firstPage()
+  })
   
   
