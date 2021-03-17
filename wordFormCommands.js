@@ -23,36 +23,6 @@ Cypress.Commands.add('showAllWordForms',()=>{
     })
 })
 
-Cypress.Commands.add('closeAllWordForms',()=>{
-    //Each word in search
-    cy.get('[class="inner-accordion"] > li').each(accordionLi=>{
-        cy.get(accordionLi).within(()=>{
-            //More word form
-            if(accordionLi.find('.morebtn').length>0){
-                cy.get('i').click({force:true})
-                // cy.get(accordionLi).within(()=>{
-                //     cy.get('i').click({force:true})
-                // })
-            }
-        }).within(()=>{
-            //More than 1 word in search
-            if(accordionLi.find('[class="inner-accordion-link selected"]').length>0){
-                //Close the list of words form of a word
-                cy.get('[class="inner-accordion-link selected"]').click({force:true})
-                cy.get('[class="inner-accordion-link selected"]').should('not.exist')
-                cy.get('[class="slide-li"]',{timeout:90000}).should('not.exist')
-                // cy.get(accordionLi).within(()=>{
-                //     cy.get('span').click({force:true})
-                // })
-            }
-        })
-    })
-    cy.get('[id="word_forms"]').click({force:true})
-    cy.get('[id="word_forms"]').should('have.attr','class','f black link')
-    cy.get('[class="slide"]',{timeout:90000}).should('not.exist')
-    cy.clearInput()
-})
-
 Cypress.Commands.add('eachSelectedWordFormMatrix',()=>{
     let wordFormsMatrix=[]
     //Each word in the search

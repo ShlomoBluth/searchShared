@@ -8,18 +8,6 @@ Cypress.Commands.add('showBooks',()=>{
     })
 })
 
-Cypress.Commands.add('closeBooks',()=>{
-    //Each collection
-    cy.get('.inner-accordion-link').each($link=>{
-        cy.get($link).click({force:true}).then(()=>{
-            cy.get($link).should('have.attr','class','inner-accordion-link')
-        })
-    })
-    cy.get('#books').click({force:true})
-    cy.get('#books').should('have.attr','class','f black link')
-    cy.clearInput()
-})
-
 Cypress.Commands.add('selectedBooksMap',()=>{
     let books=new Map()
     //Each book
