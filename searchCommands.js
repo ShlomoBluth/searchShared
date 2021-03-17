@@ -153,5 +153,32 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
     }
     firstPage()
   })
+
+  Cypress.Commands.add('resultContainsSpecificWord',(word,result)=>{
+    let wordInResults
+    let hasSpecificWord=false
+    cy.get(result).within(()=>{
+      //Each bold word in result
+      cy.get('b').each($b=>{
+        if($b.text().charAt(0)=='['||$b.text().charAt(0)=='('){
+          wordInResults=$b.text().substring(1,$b.text().length-1)
+        }else if($b.text().charAt($b.text().length)=='־'||
+        $b.text().charAt($b.text().length)=='-'){
+          wordInResults=$b.text().substring(0,$b.text().length-1)
+        }else if($b.text().charAt(0)=='־'||$b.text().charAt(0)=='-'){
+          wordInResults=$b.text().substring(1)
+        }else{
+          wordInResults=$b.text().trim()
+        }
+        //If found a bold word in result of the specific Word
+        if(word==wordInResults){
+          hasSpecificWord=true
+        }
+      }).then(()=>{
+        //cy.log(wordInResults)
+        expect(hasSpecificWord).to.be.true
+      })
+    })
+  })
   
   
