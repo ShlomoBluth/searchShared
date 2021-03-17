@@ -70,7 +70,7 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
         cy.get($searchWord).within(()=>{
             //More than 1 word form
             if($searchWord.find('[class*="selectAll"]').length>0){
-                cy.contains('Select All').click() 
+                cy.contains(/^Select All$|^בחר הכל$/g).click() 
             }
         }).then(()=>{
             cy.get($searchWord).within(()=>{
@@ -103,7 +103,7 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
             cy.get($searchWord).within(()=>{
                 //More than 1 word form
                 if($searchWord.find('[class*="selectAll"]').length>0){
-                    cy.contains('Select All').click() 
+                    cy.contains(/^Select All$|^בחר הכל$/g).click() 
                 }
             })
         })
