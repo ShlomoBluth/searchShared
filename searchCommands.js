@@ -218,6 +218,23 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
       return exists
     })
   })
+
+  Cypress.Commands.add('theFormOfTheText',(form)=>{
+    cy.get('[class="d-tooltip"]').contains(form).parent().click()
+    cy.get('[class="d-tooltip"]').contains(form).parent()
+    .should('have.attr','class','btn top-filter-common-btn text-select-btn has-tooltip active')
+  })
   
-  
+  Cypress.Commands.add('fontSize',()=>{
+    cy.get('[class="reset-line-height"]').then(text=>{
+      return parseInt(text.css('font-size'))
+    })
+  })
+
+  Cypress.Commands.add('numberOfResultInPage',(number)=>{
+    cy.get('[class*="page-toggle"]').click()
+        cy.get('[class="check-text"]').contains(number).siblings().within(()=>{
+            cy.get('[type="radio"]').check({force: true})
+        })
+  })
   

@@ -1,0 +1,8 @@
+{
+    "screenshotOnRunFailure": false,
+    "defaultCommandTimeout": 20000,
+    "reporter": "cypress-multi-reporters",
+    "reporterOptions": {
+        "configFile": "reporter-config.json"
+    }
+}
