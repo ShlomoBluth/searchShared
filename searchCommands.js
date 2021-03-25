@@ -191,7 +191,7 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
           cy.get('[class*="pagination__navigation"]').last().then($lastPage=>{
             //If last page
             if($lastPage.attr('class').includes('disabled')){
-              expect($exists).to.be.true
+              cy.get($exists).should('be.true') //expect($exists).to.be.true
             }else{
               //Next page
               cy.get('[class*="pagination__navigation"]').last().click()
@@ -204,16 +204,23 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
     existsInResults(text)
   })
   
-  Cypress.Commands.add('existsInPageResult',(text)=>{
+  Cypress.Commands.add('existsInPageResult',(ALittleDifferentText,sourceText)=>{
     let exists=false
-    cy.get('.result-list').within(()=>{
-      //Each bold word in results list
-      cy.get('b').each($b=>{
-        //If found text
-        if($b.text()==text){
-          exists=true
-        }
-      })
+    cy.log(ALittleDifferentText)
+    //Each result
+    cy.get('.result-list > li').each(li=>{
+      cy.log(li.text().includes(ALittleDifferentText))
+      if(li.text().includes(ALittleDifferentText)&&!li.text().includes(sourceText)){
+        exists=true
+        return false
+      }
+      // //Each bold word in results list
+      // cy.get('b').each($b=>{
+      //   //If found text
+      //   if($b.text()==text){
+      //     exists=true
+      //   }
+      // })
     }).then(()=>{
       return exists
     })
