@@ -274,7 +274,7 @@ Cypress.Commands.add('validateFile',({type,resNum,collection})=>{
     if(collection==='תלמוד'){
       count=(text.match(/בבלי ומשנה/g)).length
     }else if(collection==='תנ"ך'){
-      count=(text.match(/תנ"ך\//g)).length
+      count=(text.match(/תנ"ך\//g)||text.match(/תנ""ך\//g)).length
     }
   }).then(()=>{
     cy.wrap(count).should('eq',resNum)
