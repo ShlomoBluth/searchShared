@@ -83,7 +83,8 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
                                 return false
                             }else{
                                 cy.get('[type="checkbox"]').check({force: true})
-                                cy.get('[class*="loader"]').should('not.exist').then(()=>{
+                                cy.get('[class*="loader"]').should('not.exist')
+                                cy.wait(10000).then(()=>{
                                     cy.document().its('body').find('#app').within(()=>{
                                         cy.eachSelectedWordFormMatrix().
                                         then(selectedWordFormMatrix=>{
