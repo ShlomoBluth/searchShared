@@ -82,12 +82,21 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
                             if($textNum==0){
                                 return false
                             }else{
-                                cy.get('[type="checkbox"]').check({force: true})
-                                cy.get('[class*="loader"]').should('not.exist')
-                                cy.wait(10000).then(()=>{
+                                cy.getWordform().then(text=>{
                                     cy.document().its('body').find('#app').within(()=>{
-                                        cy.eachSelectedWordFormMatrix().
-                                        then(selectedWordFormMatrix=>{
+                                        cy.get('[name="queryParams"]').then(queryParams=>{
+                                            cy.wrap(queryParams.attr('value').
+                                            includes('"'+text+'":false')).should('be.true').pause()
+                                        })
+                                    })
+                                    cy.get('[type="checkbox"]').check({force: true})
+                                    cy.get('[class*="loader"]').should('not.exist')
+                                    cy.document().its('body').find('#app').within(()=>{
+                                        cy.get('[name="queryParams"]').then(queryParams=>{
+                                            cy.wrap(queryParams.attr('value').
+                                            includes('"'+text+'":true')).should('be.true').pause()
+                                        })
+                                        cy.eachSelectedWordFormMatrix().then(selectedWordFormMatrix=>{
                                             cy.resultPagination({
                                                 tests:'wordForms',
                                                 data:selectedWordFormMatrix,
@@ -95,8 +104,8 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
                                             })
                                         })
                                     })
+                                    cy.get('[type="checkbox"]').uncheck({force: true})
                                 })
-                                cy.get('[type="checkbox"]').uncheck({force: true})
                             }
                         })
                     })
