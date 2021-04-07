@@ -25,8 +25,12 @@ Cypress.Commands.add('showAllWordForms',()=>{
 
 Cypress.Commands.add('eachSelectedWordFormMatrix',()=>{
     let wordFormsMatrix=[]
+    //If mobile
+    // if(Cypress.config("viewportWidth")!==1000){
+    //     cy.showAllWordForms()
+    // }
     //Each word in the search
-    cy.get('[class="inner-accordion"] > li').each($searchWord=>{
+    cy.get('[class="inner-accordion-li inner-li"]').each($searchWord=>{
         cy.get($searchWord).within(()=>{
             cy.selectedWordFormArr().then(wordFormsArr=>{
                 wordFormsMatrix.push(wordFormsArr)
@@ -70,7 +74,7 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
         cy.get($searchWord).within(()=>{
             //More than 1 word form
             if($searchWord.find('[class*="selectAll"]').length>0){
-                cy.contains(/^Select All$|^בחר הכל$/g).click() 
+                cy.contains(/^Select All$|^בחר הכל$/g).click({force: true}) 
             }
         }).then(()=>{
             cy.get($searchWord).within(()=>{
@@ -82,8 +86,16 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
                             if($textNum==0){
                                 return false
                             }else{
-                                cy.get($wordForm).click()
+                                cy.log($wordForm.text())
+                                cy.get('[type="checkbox"]').check({force: true})
+                                cy.get('[class*="loader"]').should('not.exist')
                                 cy.document().its('body').find('#app').within(()=>{
+                                    //If mobile
+                                    // if(Cypress.config("viewportWidth")!==1000){
+                                    //     cy.get('h2').contains(/^SAVE$|^שמירה$/g)
+                                    //     .click({force:true})
+                                    //     cy.get('[class*="loader"]').should('not.exist')
+                                    // }
                                     cy.eachSelectedWordFormMatrix().
                                     then(selectedWordFormMatrix=>{
                                         cy.resultPagination({
@@ -93,7 +105,7 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
                                         })
                                     })
                                 })
-                                cy.get($wordForm).click()
+                                cy.get('[type="checkbox"]').uncheck({force: true})
                             }
                         })
                     })
@@ -103,7 +115,7 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
             cy.get($searchWord).within(()=>{
                 //More than 1 word form
                 if($searchWord.find('[class*="selectAll"]').length>0){
-                    cy.contains(/^Select All$|^בחר הכל$/g).click() 
+                    cy.contains(/^Select All$|^בחר הכל$/g).click({force: true}) 
                 }
             })
         })
@@ -176,7 +188,7 @@ Cypress.Commands.add('resultContainsWordsForm',(wordFormsArray,result)=>{
                     break  
                 }
             }
-            expect(hasWordForm).eq(true)
+            cy.wrap(hasWordForm).should('be.true')
         }
     })
 })

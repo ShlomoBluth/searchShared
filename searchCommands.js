@@ -15,13 +15,24 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
     }else{
       classAttr=''
     }
-    if(classAttr!=languageMode){
-      cy.get('a').contains(/^English$|^עברית$/g).click();
-    }
-    if(languageMode=='he'){
-      cy.get('a').contains(/^English$/).should('exist')
-    } else{
-      cy.get('a').contains(/^עברית$/).should('exist')
+    if(Cypress.config("viewportWidth")===1000){
+      if(classAttr!=languageMode){
+        cy.get('a').contains(/^English$|^עברית$/g).click({force: true});
+      }
+      if(languageMode=='he'){
+        cy.get('a').contains(/^English$/).should('exist')
+      } else{
+        cy.get('a').contains(/^עברית$/).should('exist')
+      }
+    }else{
+      if(classAttr!=languageMode){
+        cy.get('div[class*="lang-switch"]').contains(/^English$|^עברית$/g).click({force: true});
+      }
+      if(languageMode=='he'){
+        cy.get('div[class*="lang-switch"]').contains(/^English$/).should('exist')
+      } else{
+        cy.get('div[class*="lang-switch"]').contains(/^עברית$/).should('exist')
+      }
     }
   })
 })
@@ -29,7 +40,7 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
   
 Cypress.Commands.add('searchRun',({text,language,collection})=>{
   cy.setLanguageMode(language)
-  cy.get('input[id="search_box"]').type(text)
+  cy.get('input[id="search_box"]').clear().type(text)
   cy.get('button[id="mobile_search_button"]').click({force:true})
   cy.get('[class*="loader"]').should('not.exist')
 })
@@ -196,7 +207,7 @@ Cypress.Commands.add('existsInResult',(text)=>{
             cy.get($exists).should('be.true') //expect($exists).to.be.true
           }else{
             //Next page
-            cy.get('[class*="pagination__navigation"]').last().click()
+            cy.get('[class*="pagination__navigation"]').last().click({force: true})
             return existsInResults(text)
           }
         })
@@ -229,7 +240,7 @@ Cypress.Commands.add('existsInPageResult',(ALittleDifferentText,sourceText)=>{
 })
 
 Cypress.Commands.add('theFormOfTheText',(form)=>{
-  cy.get('[class="d-tooltip"]').contains(form).parent().click()
+  cy.get('[class="d-tooltip"]').contains(form).parent().click({force: true})
   cy.get('[class="d-tooltip"]').contains(form).parent()
   .should('have.attr','class','btn top-filter-common-btn text-select-btn has-tooltip active')
 })
@@ -241,7 +252,7 @@ Cypress.Commands.add('fontSize',()=>{
 })
 
 Cypress.Commands.add('numberOfResultInPage',(number)=>{
-  cy.get('[class*="page-toggle"]').click()
+  cy.get('[class*="page-toggle"]').click({force: true})
       cy.get('[class="check-text"]').contains(number).siblings().within(()=>{
           cy.get('[type="radio"]').check({force: true})
       })
@@ -252,7 +263,7 @@ Cypress.Commands.add('removeDownloadsFiles',()=>{
 })
 
 Cypress.Commands.add('downloadFile',({type,shemotKdoshim})=>{
-  cy.get('[class*="dropdown-toggle"]').contains('הורדה').click()
+  cy.get('[class*="dropdown-toggle"]').contains('הורדה').click({force: true})
     cy.get('p').contains('קובץ '+type).parent().within(()=>{
       cy.get('[type="radio"]').check({force:true})
     }).then(()=>{
@@ -262,7 +273,7 @@ Cypress.Commands.add('downloadFile',({type,shemotKdoshim})=>{
         })
       }
     })
-  cy.get('[type="submit"]').click()
+  cy.get('[type="submit"]').click({force: true})
 })
   
 let downloadsFolder = Cypress.config('downloadsFolder')
