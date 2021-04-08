@@ -70,7 +70,10 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
         cy.get($searchWord).within(()=>{
             //More than 1 word form
             if($searchWord.find('[class*="selectAll"]').length>0){
-                cy.contains(/^Select All$|^בחר הכל$/g).click({force: true}) 
+                cy.get('p').contains(/^Select All$|^בחר הכל$/g)
+                .siblings('[class="chek-box-holder"]').within(()=>{
+                    cy.get('[type="checkbox"]').uncheck({force:true})
+                })
             }
         }).then(()=>{
             cy.get($searchWord).within(()=>{
@@ -82,10 +85,13 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
                             if($textNum==0){
                                 return false
                             }else{
-                                cy.get('.result-list').should('not.exist')
-                                cy.get('[type="checkbox"]').check({force: true})
-                                cy.get('[class*="loader"]').should('not.exist')
                                 cy.document().its('body').find('#app').within(()=>{
+                                    cy.get('[class*="loader"]').should('not.exist')
+                                    cy.get('.result-list').should('not.exist')
+                                })
+                                cy.get('[type="checkbox"]').check({force: true})
+                                cy.document().its('body').find('#app').within(()=>{
+                                    cy.get('[class*="loader"]').should('not.exist')
                                     cy.eachSelectedWordFormMatrix().
                                     then(selectedWordFormMatrix=>{
                                         cy.resultPagination({
@@ -105,7 +111,14 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
             cy.get($searchWord).within(()=>{
                 //More than 1 word form
                 if($searchWord.find('[class*="selectAll"]').length>0){
-                    cy.contains(/^Select All$|^בחר הכל$/g).click({force: true}) 
+                    cy.get('p').contains(/^Select All$|^בחר הכל$/g)
+                    .siblings('[class="chek-box-holder"]').within(()=>{
+                        cy.get('[type="checkbox"]').check({force:true})
+                        cy.document().its('body').find('#app').within(()=>{
+                            cy.get('[class*="loader"]').should('not.exist')
+                            cy.get('.result-list').should('exist')
+                        })
+                    })
                 }
             })
         })
