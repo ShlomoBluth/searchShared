@@ -82,30 +82,20 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
                             if($textNum==0){
                                 return false
                             }else{
-                                cy.getWordform().then(text=>{
-                                    cy.document().its('body').find('#app').within(()=>{
-                                        cy.get('[name="queryParams"]').then(queryParams=>{
-                                            cy.wrap(queryParams.attr('value').
-                                            includes('"'+text+'":false')).should('be.true').pause()
+                                cy.get('.result-list').should('not.exist')
+                                cy.get('[type="checkbox"]').check({force: true})
+                                cy.get('[class*="loader"]').should('not.exist')
+                                cy.document().its('body').find('#app').within(()=>{
+                                    cy.eachSelectedWordFormMatrix().
+                                    then(selectedWordFormMatrix=>{
+                                        cy.resultPagination({
+                                            tests:'wordForms',
+                                            data:selectedWordFormMatrix,
+                                            textNumbers:$textNum
                                         })
                                     })
-                                    cy.get('[type="checkbox"]').check({force: true})
-                                    cy.get('[class*="loader"]').should('not.exist')
-                                    cy.document().its('body').find('#app').within(()=>{
-                                        cy.get('[name="queryParams"]').then(queryParams=>{
-                                            cy.wrap(queryParams.attr('value').
-                                            includes('"'+text+'":true')).should('be.true').pause()
-                                        })
-                                        cy.eachSelectedWordFormMatrix().then(selectedWordFormMatrix=>{
-                                            cy.resultPagination({
-                                                tests:'wordForms',
-                                                data:selectedWordFormMatrix,
-                                                textNumbers:$textNum
-                                            })
-                                        })
-                                    })
-                                    cy.get('[type="checkbox"]').uncheck({force: true})
                                 })
+                                cy.get('[type="checkbox"]').uncheck({force: true})
                             }
                         })
                     })
