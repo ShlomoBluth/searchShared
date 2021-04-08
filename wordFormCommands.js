@@ -85,10 +85,7 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
                             if($textNum==0){
                                 return false
                             }else{
-                                cy.document().its('body').find('#app').within(()=>{
-                                    cy.get('[class*="loader"]').should('not.exist')
-                                    cy.get('.result-list').should('not.exist')
-                                })
+                                cy.resultListExist('not.exist')
                                 cy.get('[type="checkbox"]').check({force: true})
                                 cy.document().its('body').find('#app').within(()=>{
                                     cy.get('[class*="loader"]').should('not.exist')
@@ -114,10 +111,7 @@ Cypress.Commands.add('wordFormsWithNumberOfAppearances',()=>{
                     cy.get('p').contains(/^Select All$|^בחר הכל$/g)
                     .siblings('[class="chek-box-holder"]').within(()=>{
                         cy.get('[type="checkbox"]').check({force:true})
-                        cy.document().its('body').find('#app').within(()=>{
-                            cy.get('[class*="loader"]').should('not.exist')
-                            cy.get('.result-list').should('exist')
-                        })
+                        cy.resultListExist('exist')
                     })
                 }
             })
@@ -201,4 +195,11 @@ Cypress.Commands.add('getWordform',()=>{
         return text.text()
     })
 })
-  
+
+Cypress.Commands.add('resultListExist',(isExist)=>{
+    cy.document().its('body').find('#app').within(()=>{
+        cy.get('[class*="loader"]').should('not.exist')
+        cy.get('.result-list').should(isExist)
+    })    
+})
+

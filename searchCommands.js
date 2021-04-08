@@ -16,25 +16,22 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
       classAttr=''
     }
     if(Cypress.config("viewportWidth")===1000){
-      if(classAttr!=languageMode){
-        cy.get('a').contains(/^English$|^עברית$/g).click({force: true});
-      }
-      if(languageMode=='he'){
-        cy.get('a').contains(/^English$/).should('exist')
-      } else{
-        cy.get('a').contains(/^עברית$/).should('exist')
-      }
+      cy.clickLanguage('a',classAttr,languageMode)
     }else{
-      if(classAttr!=languageMode){
-        cy.get('div[class*="lang-switch"]').contains(/^English$|^עברית$/g).click({force: true});
-      }
-      if(languageMode=='he'){
-        cy.get('div[class*="lang-switch"]').contains(/^English$/).should('exist')
-      } else{
-        cy.get('div[class*="lang-switch"]').contains(/^עברית$/).should('exist')
-      }
+      cy.clickLanguage('div[class*="lang-switch"]',classAttr,languageMode)
     }
   })
+})
+
+Cypress.Commands.add('clickLanguage',(selector,classAttr,languageMode)=>{
+  if(classAttr!=languageMode){
+    cy.get(selector).contains(/^English$|^עברית$/g).click({force: true});
+  }
+  if(languageMode=='he'){
+    cy.get(selector).contains(/^English$/).should('exist')
+  } else{
+    cy.get(selector).contains(/^עברית$/).should('exist')
+  }
 })
   
   
@@ -297,4 +294,11 @@ Cypress.Commands.add('fileDoesNotContain',({type,text})=>{
   cy.readFile(filename,{timeout:60000}).then(fileText=>{
     cy.wrap(fileText.includes(text)).should('be.false')
   })
+})
+
+Cypress.Commands.add('resultListExist',(isExist)=>{
+  cy.document().its('body').find('#app').within(()=>{
+      cy.get('[class*="loader"]').should('not.exist')
+      cy.get('.result-list').should(isExist)
+  })    
 })
