@@ -276,7 +276,9 @@ let downloadsFolder = Cypress.config('downloadsFolder')
 Cypress.Commands.add('validateFile',({type,resNum,collection})=>{
   const filename = path.join(downloadsFolder, 'searchResults.'+type)
   let count
-  cy.readFile(filename,{timeout:60000}).then(text=>{
+  
+  cy.readFile(filename,{timeout:60000}).should('not.be.null').and('not.eq','').then(text=>{
+    //cy.wrap(text).should('not.be.null')
     if(collection==='תלמוד'){
       count=(text.match(/בבלי ומשנה/g)).length
     }else if(collection==='תנ"ך'){
