@@ -191,10 +191,10 @@ Cypress.Commands.add('resultContainsSpecificWord',(word,result)=>{
   })
 })
 
-Cypress.Commands.add('existsInResult',(text)=>{
+Cypress.Commands.add('existsInResult',(text,sourceText)=>{
   //Recursive function through pages
-  function existsInResults(text){
-    return cy.existsInPageResult(text).then($exists=>{
+  function existsInResults(text,sourceText){
+    return cy.existsInPageResult(text,sourceText).then($exists=>{
       if($exists==true){
         return true
       }else{
@@ -205,21 +205,19 @@ Cypress.Commands.add('existsInResult',(text)=>{
           }else{
             //Next page
             cy.get('[class*="pagination__navigation"]').last().click({force: true})
-            return existsInResults(text)
+            return existsInResults(text,sourceText)
           }
         })
       }
     })
   }
-  existsInResults(text)
+  existsInResults(text,sourceText)
 })
   
 Cypress.Commands.add('existsInPageResult',(ALittleDifferentText,sourceText)=>{
   let exists=false
-  cy.log(ALittleDifferentText)
   //Each result
   cy.get('.result-list > li').each(li=>{
-    cy.log(li.text().includes(ALittleDifferentText))
     if(li.text().includes(ALittleDifferentText)&&!li.text().includes(sourceText)){
       exists=true
       return false
