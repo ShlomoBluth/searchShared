@@ -8,7 +8,7 @@ Cypress.Commands.add('showAllWordForms',()=>{
                 //Open the list of word form of a word
                 cy.get($accordionLi).within(()=>{
                     cy.get('[class="inner-accordion-link"]').click({force:true})
-                    cy.get('[class*="inner-accordion-link"]')
+                    cy.get('[class*="inner-accordion-link"]',{timeout:60000})
                     .should('have.attr','class','inner-accordion-link selected')
                 })
             }
