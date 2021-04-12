@@ -1,4 +1,4 @@
-
+import '@testing-library/cypress/add-commands'
 const path = require('path')
 
 Cypress.Commands.add('setLanguageMode',(language)=>{
@@ -191,44 +191,117 @@ Cypress.Commands.add('resultContainsSpecificWord',(word,result)=>{
   })
 })
 
-Cypress.Commands.add('existsInResult',(text,sourceText)=>{
-  //Recursive function through pages
-  function existsInResults(text,sourceText){
-    return cy.existsInPageResult(text,sourceText).then($exists=>{
-      if($exists==true){
-        return true
-      }else{
-        cy.get('[class*="pagination__navigation"]').last().then($lastPage=>{
-          //If last page
-          if($lastPage.attr('class').includes('disabled')){
-            cy.get($exists).should('be.true') //expect($exists).to.be.true
-          }else{
-            //Next page
-            cy.get('[class*="pagination__navigation"]').last().click({force: true})
-            return existsInResults(text,sourceText)
-          }
-        })
+Cypress.Commands.add('existsInResult',(text)=>{
+  let sourceTextWordForms=[]
+  cy.showAllWordForms()
+  cy.eachSelectedWordFormMatrix().then(eachSelectedWordFormMatrix=>{
+    sourceTextWordForms.push(text)
+    for(let i=0;i<eachSelectedWordFormMatrix.length;i++){
+      if(eachSelectedWordFormMatrix[i].find(x=>x===text)){
+        sourceTextWordForms=eachSelectedWordFormMatrix[i]
       }
-    })
-  }
-  existsInResults(text,sourceText)
+    }
+  }).then(()=>{
+    //Recursive function through pages
+    function existsInResults(text,sourceTextWordForms){
+      return cy.existsInPageResult(text,sourceTextWordForms).then($exists=>{
+        if($exists==true){
+          return true
+        }else{
+          cy.get('[class*="pagination__navigation"]').last().then($lastPage=>{
+            //If last page
+            if($lastPage.attr('class').includes('disabled')){
+              cy.get($exists).should('be.true') //expect($exists).to.be.true
+            }else{
+              //Next page
+              cy.get('[class*="pagination__navigation"]').last().click({force: true})
+              return existsInResults(text,sourceTextWordForms)
+            }
+          })
+        }
+      })
+    }
+    existsInResults(text,sourceTextWordForms)
+  })
 })
   
-Cypress.Commands.add('existsInPageResult',(ALittleDifferentText,sourceText)=>{
+Cypress.Commands.add('existsInPageResult',(ALittleDifferentText,sourceTextWordForms)=>{
   let exists=false
   //Each result
-  cy.get('.result-list > li').each(li=>{
-    if(li.text().includes(ALittleDifferentText)&&!li.text().includes(sourceText)){
-      exists=true
-      return false
+  cy.get('.result-list > li').then($li=>{
+    function existsInPageResult(pageResult){
+      if(pageResult.length==0){
+        return exists
+      }
+      cy.existsResult(pageResult[0],ALittleDifferentText,sourceTextWordForms).then($existsResult=>{
+        if($existsResult){
+          exists=true
+        }
+        else{
+          existsInPageResult(pageResult.slice(1))
+        }
+      })
     }
-    // //Each bold word in results list
-    // cy.get('b').each($b=>{
-    //   //If found text
-    //   if($b.text()==text){
+    existsInPageResult($li)
+    // for(let i=0;i<sourceTextWordForms.length;i++){
+    //   if($li.text().includes(sourceTextWordForms[i])&&sourceTextWordForms[i]!=ALittleDifferentText){
+    //     cy.get($li).find('b').then($b=>{
+    //       cy.log($b.length).pause()
+    //       // if($b==sourceTextWordForms[i]){
+    //       //   cy.log($li.text())
+    //       //   cy.log(sourceTextWordForms[i]+' false')
+    //       //   exists=false
+    //       //   return false
+    //       // }
+    //     })
+    //   }else if($li.text().includes(sourceTextWordForms[i])){
+    //     cy.log($li.text())
+    //     cy.log(sourceTextWordForms[i]+' true')
     //     exists=true
     //   }
+    // }
+    // if(exists==true){
+    //   return false
+    // }
+    // if(li.text().includes(ALittleDifferentText)&&!li.text().includes(sourceText)){
+    //   exists=true
+    //   return false
+    // }
+    // cy.get(li).within(()=>{
+    //   //Each bold word in result
+    //   cy.get('b').each($b=>{
+    //     //If found text
+    //     if($b.text()==ALittleDifferentText){
+    //       exists=true
+    //     }else if($b.text()==sourceText){
+    //       exists=false
+    //       return false
+    //     }
+    //   })
     // })
+  }).then(()=>{
+    return exists
+  })
+})
+
+Cypress.Commands.add('existsResult',(result,ALittleDifferentText,sourceTextWordForms)=>{
+  let exists=false
+  cy.get(result).find('b').then($b=>{
+    function existsResult(boldWords){
+      if(boldWords.length==0){
+        return exists
+      }
+      if(sourceTextWordForms.find(x=>x===boldWords[0].textContent)&&
+      boldWords[0].textContent!=ALittleDifferentText){
+        exists=false
+      }else if(sourceTextWordForms.find(x=>x===boldWords[0].textContent)){
+        exists=true
+        existsResult(boldWords.slice(1))
+      }else{
+        existsResult(boldWords.slice(1))
+      }
+    }
+    existsResult($b)
   }).then(()=>{
     return exists
   })
