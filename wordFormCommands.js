@@ -1,5 +1,6 @@
 Cypress.Commands.add('showAllWordForms',()=>{
     cy.get('[id="word_forms"] > span').click({force:true})
+    cy.get('[id="word_forms"]').should('have.attr','class','f black link active')
     //Each word in search
     cy.document().its('body').find('#app').then($body=>{
         if($body.find('[class="inner-accordion"] > li').length>0){
@@ -10,8 +11,8 @@ Cypress.Commands.add('showAllWordForms',()=>{
                         //Open the list of word form of a word
                         cy.get($accordionLi).within(()=>{
                             cy.get('[class="inner-accordion-link"]').click({force:true})
-                            // cy.get('[class*="inner-accordion-link"]',{timeout:60000})
-                            // .should('have.attr','class','inner-accordion-link selected')
+                            cy.get('[class*="inner-accordion-link"]',{timeout:60000})
+                             .should('have.attr','class','inner-accordion-link selected')
                         })
                     }
                 }).then(()=>{
