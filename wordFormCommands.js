@@ -1,37 +1,45 @@
 Cypress.Commands.add('showAllWordForms',()=>{
     cy.get('[id="word_forms"] > span').click({force:true})
     //Each word in search
-    cy.get('[class="inner-accordion"] > li').each($accordionLi=>{
-        cy.get($accordionLi).then(()=>{
-            //More than 1 word in search
-            if($accordionLi.find('[class="inner-accordion-link"]').length>0){
-                //Open the list of word form of a word
-                cy.get($accordionLi).within(()=>{
-                    cy.get('[class="inner-accordion-link"]').click({force:true})
-                    cy.get('[class*="inner-accordion-link"]',{timeout:60000})
-                    .should('have.attr','class','inner-accordion-link selected')
+    cy.document().its('body').find('#app').then($body=>{
+        if($body.find('[class="inner-accordion"] > li').length>0){
+            cy.get('[class="inner-accordion"] > li').each($accordionLi=>{
+                cy.get($accordionLi).then(()=>{
+                    //More than 1 word in search
+                    if($accordionLi.find('[class="inner-accordion-link"]').length>0){
+                        //Open the list of word form of a word
+                        cy.get($accordionLi).within(()=>{
+                            cy.get('[class="inner-accordion-link"]').click({force:true})
+                            cy.get('[class*="inner-accordion-link"]',{timeout:60000})
+                            .should('have.attr','class','inner-accordion-link selected')
+                        })
+                    }
+                }).then(()=>{
+                    //More word form
+                    if($accordionLi.find('.morebtn').length>0){
+                        cy.get($accordionLi).within(()=>{
+                            cy.get('a[class="f gray"]').click({force:true})
+                        })
+                    }
                 })
-            }
-        }).then(()=>{
-            //More word form
-            if($accordionLi.find('.morebtn').length>0){
-                cy.get($accordionLi).within(()=>{
-                    cy.get('a[class="f gray"]').click({force:true})
-                })
-            }
-        })
+            })
+        }
     })
 })
 
 Cypress.Commands.add('eachSelectedWordFormMatrix',()=>{
     let wordFormsMatrix=[]
-    //Each word in the search
-    cy.get('[class="inner-accordion-li inner-li"]').each($searchWord=>{
-        cy.get($searchWord).within(()=>{
-            cy.selectedWordFormArr().then(wordFormsArr=>{
-                wordFormsMatrix.push(wordFormsArr)
+    cy.document().its('body').find('#app').then($body=>{
+        if($body.find('[class="inner-accordion-li inner-li"]').length>0){
+            //Each word in the search
+            cy.get('[class="inner-accordion-li inner-li"]').each($searchWord=>{
+                cy.get($searchWord).within(()=>{
+                    cy.selectedWordFormArr().then(wordFormsArr=>{
+                        wordFormsMatrix.push(wordFormsArr)
+                    })
+                })
             })
-        })
+        }
     }).then(()=>{
         return wordFormsMatrix
     })

@@ -1,4 +1,4 @@
-import '@testing-library/cypress/add-commands'
+
 const path = require('path')
 
 Cypress.Commands.add('setLanguageMode',(language)=>{
