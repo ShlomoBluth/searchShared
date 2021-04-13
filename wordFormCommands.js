@@ -1,6 +1,5 @@
 Cypress.Commands.add('showAllWordForms',()=>{
     cy.get('[id="word_forms"] > span').click({force:true})
-    cy.get('[id="word_forms"]').should('have.attr','class','f black link active')
     //Each word in search
     cy.document().its('body').find('#app').then($body=>{
         if($body.find('[class="inner-accordion"] > li').length>0){
