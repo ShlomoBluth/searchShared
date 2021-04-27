@@ -1,4 +1,5 @@
 Cypress.Commands.add('showAllWordForms',()=>{
+    cy.get('p').contains(/^0 הטיות$/).should('not.exist')
     cy.get('[id="word_forms"] > span').click({force:true})
     //Each word in search
     cy.document().its('body').find('#app').then($body=>{

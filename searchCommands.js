@@ -35,11 +35,13 @@ Cypress.Commands.add('clickLanguage',(selector,classAttr,languageMode)=>{
 })
   
   
-Cypress.Commands.add('searchRun',({text,language,collection})=>{
+Cypress.Commands.add('searchRun',({text,language,delay})=>{
   cy.setLanguageMode(language)
   cy.get('input[id="search_box"]').clear().type(text)
   cy.get('button[id="mobile_search_button"]').click({force:true})
-  cy.get('[class*="loader"]').should('not.exist')
+  if(delay!=true){
+    cy.get('[class*="loader"]').should('not.exist')
+  }
 })
   
 Cypress.Commands.add('clearInput',()=>{
