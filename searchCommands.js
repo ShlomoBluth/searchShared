@@ -16,27 +16,29 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
       classAttr=''
     }
     if(Cypress.config("viewportWidth")===1000){
-      cy.clickLanguage('a',classAttr,languageMode)
+      cy.clickLanguage('a',classAttr,languageMode,language)
     }else{
-      cy.clickLanguage('div[class*="lang-switch"]',classAttr,languageMode)
+      cy.clickLanguage('div[class*="lang-switch"]',classAttr,languageMode,language)
     }
   })
 })
 
-Cypress.Commands.add('clickLanguage',(selector,classAttr,languageMode)=>{
+Cypress.Commands.add('clickLanguage',(selector,classAttr,languageMode,language)=>{
   if(classAttr!=languageMode){
-    cy.get(selector,{timeout:60000}).contains(/^English$|^עברית$/g).click({force: true});
+    cy.log('Change to mode '+language)
+    cy.get(selector).contains(/^English$|^עברית$/g,{timeout:60000}).click({force: true});
   }
   if(languageMode=='he'){
-    cy.get(selector,{timeout:60000}).contains(/^English$/).should('exist')
+    cy.get(selector).contains(/^English$/,{timeout:60000}).should('exist')
   } else{
-    cy.get(selector,{timeout:60000}).contains(/^עברית$/).should('exist')
+    cy.get(selector).contains(/^עברית$/,{timeout:60000}).should('exist')
   }
 })
   
   
 Cypress.Commands.add('searchRun',({text,language,delay})=>{
   cy.setLanguageMode(language)
+  cy.log("Run search for "+text)
   cy.get('input[id="search_box"]').clear().type(text)
   cy.get('button[id="mobile_search_button"]').click({force:true})
   if(delay!=true){
@@ -310,6 +312,7 @@ Cypress.Commands.add('existsResult',(result,ALittleDifferentText,sourceTextWordF
 })
 
 Cypress.Commands.add('theFormOfTheText',(form)=>{
+  cy.log("Form of text is "+form)
   cy.get('[class="d-tooltip"]').contains(form).parent().click({force: true})
   cy.get('[class="d-tooltip"]').contains(form).parent()
   .should('have.attr','class','btn top-filter-common-btn text-select-btn has-tooltip active')
