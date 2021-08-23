@@ -24,15 +24,18 @@ Cypress.Commands.add('setLanguageMode',(language)=>{
 })
 
 Cypress.Commands.add('clickLanguage',(selector,classAttr,languageMode,language)=>{
-  if(classAttr!=languageMode){
-    cy.log('Change to mode '+language)
-    cy.get(selector).contains(/^English$|^עברית$/g,{timeout:60000}).click({force: true});
-  }
-  if(languageMode=='he'){
-    cy.get(selector).contains(/^English$/,{timeout:60000}).should('exist')
-  } else{
-    cy.get(selector).contains(/^עברית$/,{timeout:60000}).should('exist')
-  }
+  cy.then(()=>{
+    if(classAttr!=languageMode){
+      cy.log('Change to mode '+language)
+      cy.get(selector,{timeout:60000}).contains(/^English$|^עברית$/g,{timeout:60000}).click({force: true});
+    }
+  }).then(()=>{
+    if(languageMode=='he'){
+      cy.get(selector,{timeout:60000}).contains(/^English$/,{timeout:60000}).should('exist')
+    } else{
+      cy.get(selector,{timeout:60000}).contains(/^עברית$/,{timeout:60000}).should('exist')
+    }
+  })
 })
   
   
