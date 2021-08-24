@@ -60,12 +60,12 @@ Cypress.Commands.add('searchRun',({text,language,delay})=>{
   cy.intercept('**/lexemes').as('lexemesreq')
   cy.get('input[id="search_box"]').clear().type(text)
   cy.get('button[id="mobile_search_button"]').click({force:true})
-  cy.wait('@wordformsreq',{timeout:10000})
+  cy.wait('@wordformsreq',{timeout:30000})
   cy.wait('@textAnalysisreq',{timeout:30000})
-  cy.wait('@relatedreq',{timeout:10000})
-  cy.wait('@searchreq',{timeout:10000})
-  cy.wait('@booksreq',{timeout:10000})
-  cy.wait('@lexemesreq',{timeout:10000})
+  cy.wait('@relatedreq',{timeout:30000})
+  cy.wait('@searchreq',{timeout:30000})
+  cy.wait('@booksreq',{timeout:30000})
+  cy.wait('@lexemesreq',{timeout:30000})
 })
   
 Cypress.Commands.add('clearInput',()=>{
