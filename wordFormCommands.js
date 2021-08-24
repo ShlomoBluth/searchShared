@@ -1,7 +1,13 @@
 Cypress.Commands.add('showAllWordForms',()=>{
-    cy.get('p').contains(/^0 הטיות$/).should('not.exist')
-    cy.get('[id="word_forms"] > span').click({force:true})
-    cy.get('[id="word_forms"]').should('have.attr','class','f black link active')
+    let num
+    cy.get('[id*="new-label-wordform"]').then(wordFormnum=>{
+        num=parseInt(wordFormnum.text())
+    }).then(()=>{
+        if(num!=0){
+            cy.get('[id="word_forms"] > span').click({force:true})
+            cy.get('[id="word_forms"]').should('have.attr','class','f black link active')
+        }
+    })
     //Each word in search
     cy.document().its('body').find('#app').then($body=>{
         if($body.find('[class="inner-accordion"] > li').length>0){

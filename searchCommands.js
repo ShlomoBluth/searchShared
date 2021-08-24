@@ -37,9 +37,8 @@ Cypress.Commands.add('clickLanguage',(selector,classAttr,languageMode,language)=
     }
   })
 })
-  
-  
-Cypress.Commands.add('searchRun',({text,language,delay})=>{
+
+Cypress.Commands.add('searchRunforReq',({text,language,delay})=>{
   cy.setLanguageMode(language)
   cy.log("Run search for "+text)
   cy.get('input[id="search_box"]').clear().type(text)
@@ -47,6 +46,26 @@ Cypress.Commands.add('searchRun',({text,language,delay})=>{
   if(delay!=true){
     cy.get('[class*="loader"]').should('not.exist')
   }
+})
+  
+  
+Cypress.Commands.add('searchRun',({text,language,delay})=>{
+  cy.setLanguageMode(language)
+  cy.log("Run search for "+text)
+  cy.intercept('**/wordforms').as('wordformsreq')
+  cy.intercept('**/textAnalysis').as('textAnalysisreq')
+  cy.intercept('**/related').as('relatedreq')
+  cy.intercept('**/search').as('searchreq')
+  cy.intercept('**/books').as('booksreq')
+  cy.intercept('**/lexemes').as('lexemesreq')
+  cy.get('input[id="search_box"]').clear().type(text)
+  cy.get('button[id="mobile_search_button"]').click({force:true})
+  cy.wait('@wordformsreq')
+  cy.wait('@textAnalysisreq')
+  cy.wait('@relatedreq')
+  cy.wait('@searchreq')
+  cy.wait('@booksreq')
+  cy.wait('@lexemesreq')
 })
   
 Cypress.Commands.add('clearInput',()=>{
@@ -205,6 +224,7 @@ Cypress.Commands.add('existsInResult',(text)=>{
     sourceTextWordForms.push(text)
     for(let i=0;i<eachSelectedWordFormMatrix.length;i++){
       if(eachSelectedWordFormMatrix[i].find(x=>x===text)){
+        //All wordforms of of word
         sourceTextWordForms=eachSelectedWordFormMatrix[i]
       }
     }
