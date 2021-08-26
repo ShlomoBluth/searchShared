@@ -31,9 +31,9 @@ Cypress.Commands.add('clickLanguage',(selector,classAttr,languageMode,language)=
     }
   }).then(()=>{
     if(languageMode=='he'){
-      cy.get(selector,{timeout:60000}).contains(/^English$/,{timeout:60000}).should('exist')
+      cy.get(selector,{timeout:60000}).contains('English').should('exist')
     } else{
-      cy.get(selector,{timeout:60000}).contains(/^עברית$/,{timeout:60000}).should('exist')
+      cy.get(selector,{timeout:60000}).contains('עברית').should('exist')
     }
   })
 })
