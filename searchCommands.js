@@ -57,13 +57,20 @@ Cypress.Commands.add('searchRun',({text,language,delay})=>{
   cy.intercept('**/search').as('searchreq')
   cy.intercept('**/books').as('booksreq')
   cy.intercept('**/lexemes').as('lexemesreq')
+  cy.intercept('**/related').as('relatedreq')
   cy.get('input[id="search_box"]').clear().type(text)
   cy.get('button[id="mobile_search_button"]').click({force:true})
   cy.wait('@wordformsreq')
   cy.wait('@textAnalysisreq')
   cy.wait('@searchreq')
+  cy.url().then(url=>{
+    if(url.includes('https://multisearch-2-dev--cranky-banach-377068.netlify.app/')||
+    url.includes('https://search.dicta.org.il/')){
+      cy.wait('@lexemesreq')
+      cy.wait('@relatedreq')
+    }
+  })
   cy.wait('@booksreq')
-  cy.wait('@lexemesreq')
 })
   
 Cypress.Commands.add('clearInput',()=>{
