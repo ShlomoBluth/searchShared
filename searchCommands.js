@@ -59,6 +59,7 @@ Cypress.Commands.add('searchRun',({text,language,delay})=>{
   cy.intercept('**/lexemes').as('lexemesreq')
   cy.intercept('**/related').as('relatedreq')
   cy.get('input[id="search_box"]').clear().type(text)
+  cy.get('input[id="search_box"]').should('have.value', text)
   cy.get('button[id="mobile_search_button"]').click({force:true}).then(()=>{
     cy.wait('@wordformsreq')
     cy.wait('@textAnalysisreq')
