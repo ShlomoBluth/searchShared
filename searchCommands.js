@@ -31,15 +31,18 @@ Cypress.Commands.add('clickLanguage',(selector,classAttr,languageMode,language)=
     }
   }).then(()=>{
     if(languageMode=='he'){
-      cy.get(selector,{timeout:60000}).contains('English').should('exist')
+      cy.get(selector,{timeout:60000}).contains(/^English$/,{timeout:60000}).should('exist')
     } else{
-      cy.get(selector,{timeout:60000}).contains('עברית').should('exist')
+      cy.get(selector,{timeout:60000}).contains(/^עברית$/,{timeout:60000}).should('exist')
     }
   })
 })
 
 Cypress.Commands.add('searchRunforReq',({text,language,delay})=>{
-  cy.setLanguageMode(language)
+  cy.setLanguageMode({
+    language:language,
+    mobileSelector:'lang-switch'
+  })
   cy.log("Run search for "+text)
   cy.get('input[id="search_box"]').clear().type(text)
   cy.get('button[id="mobile_search_button"]').click({force:true})
@@ -50,29 +53,25 @@ Cypress.Commands.add('searchRunforReq',({text,language,delay})=>{
   
   
 Cypress.Commands.add('searchRun',({text,language,delay})=>{
-  cy.setLanguageMode(language)
+  cy.setLanguageMode({
+    language:language,
+    mobileSelector:'lang-switch'
+  })
   cy.log("Run search for "+text)
   cy.intercept('**/wordforms').as('wordformsreq')
   cy.intercept('**/textAnalysis').as('textAnalysisreq')
+  cy.intercept('**/related').as('relatedreq')
   cy.intercept('**/search').as('searchreq')
   cy.intercept('**/books').as('booksreq')
   cy.intercept('**/lexemes').as('lexemesreq')
-  cy.intercept('**/related').as('relatedreq')
   cy.get('input[id="search_box"]').clear().type(text)
-  cy.get('input[id="search_box"]').should('have.value', text)
-  cy.get('button[id="mobile_search_button"]').click({force:true}).then(()=>{
-    cy.wait('@wordformsreq')
-    cy.wait('@textAnalysisreq')
-    cy.wait('@searchreq')
-    cy.url().then(url=>{
-      if(url.includes('https://multisearch-2-dev--cranky-banach-377068.netlify.app/')||
-      url.includes('https://search.dicta.org.il/')){
-        cy.wait('@lexemesreq')
-        cy.wait('@relatedreq')
-    }
-  })
-  cy.wait('@booksreq')
-  })
+  cy.get('button[id="mobile_search_button"]').click({force:true})
+  cy.wait('@wordformsreq',{timeout:30000})
+  cy.wait('@textAnalysisreq',{timeout:30000})
+  cy.wait('@relatedreq',{timeout:30000})
+  cy.wait('@searchreq',{timeout:30000})
+  cy.wait('@booksreq',{timeout:30000})
+  cy.wait('@lexemesreq',{timeout:30000})
 })
   
 Cypress.Commands.add('clearInput',()=>{
