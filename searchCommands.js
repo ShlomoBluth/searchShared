@@ -52,7 +52,7 @@ Cypress.Commands.add('searchRunforReq',({text,language,delay})=>{
 })
   
   
-Cypress.Commands.add('searchRun',({text,language,delay})=>{
+Cypress.Commands.add('searchRun',({text,language,collection})=>{
   cy.setLanguageMode({
     language:language,
     mobileSelector:'lang-switch'
@@ -68,10 +68,12 @@ Cypress.Commands.add('searchRun',({text,language,delay})=>{
   cy.get('button[id="mobile_search_button"]').click({force:true})
   cy.wait('@wordformsreq',{timeout:30000})
   cy.wait('@textAnalysisreq',{timeout:30000})
-  cy.wait('@relatedreq',{timeout:30000})
   cy.wait('@searchreq',{timeout:30000})
   cy.wait('@booksreq',{timeout:30000})
-  cy.wait('@lexemesreq',{timeout:30000})
+  if(collection=='תנ"ך'){
+    cy.wait('@lexemesreq',{timeout:30000})
+    cy.wait('@relatedreq',{timeout:30000})
+  }
 })
   
 Cypress.Commands.add('clearInput',()=>{
