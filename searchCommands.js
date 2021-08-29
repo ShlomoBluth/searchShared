@@ -1,42 +1,42 @@
 
 const path = require('path')
 
-Cypress.Commands.add('setLanguageMode',(language)=>{
-  cy.get('body').then(elem => {
-    let languageMode
-    if(language=='Hebrew'){
-      languageMode='he'
-    }else if(language=='English'){
-      languageMode=''
-    }
-    let classAttr 
-    if(elem.attr("class").substring(0,2)=='he'){
-      classAttr=elem.attr("class").substring(0,2)
-    }else{
-      classAttr=''
-    }
-    if(Cypress.config("viewportWidth")===1000){
-      cy.clickLanguage('a',classAttr,languageMode,language)
-    }else{
-      cy.clickLanguage('div[class*="lang-switch"]',classAttr,languageMode,language)
-    }
-  })
-})
+// Cypress.Commands.add('setLanguageMode',(language)=>{
+//   cy.get('body').then(elem => {
+//     let languageMode
+//     if(language=='Hebrew'){
+//       languageMode='he'
+//     }else if(language=='English'){
+//       languageMode=''
+//     }
+//     let classAttr 
+//     if(elem.attr("class").substring(0,2)=='he'){
+//       classAttr=elem.attr("class").substring(0,2)
+//     }else{
+//       classAttr=''
+//     }
+//     if(Cypress.config("viewportWidth")===1000){
+//       cy.clickLanguage('a',classAttr,languageMode,language)
+//     }else{
+//       cy.clickLanguage('div[class*="lang-switch"]',classAttr,languageMode,language)
+//     }
+//   })
+// })
 
-Cypress.Commands.add('clickLanguage',(selector,classAttr,languageMode,language)=>{
-  cy.then(()=>{
-    if(classAttr!=languageMode){
-      cy.log('Change to mode '+language)
-      cy.get(selector,{timeout:60000}).contains(/^English$|^עברית$/g,{timeout:60000}).click({force: true});
-    }
-  }).then(()=>{
-    if(languageMode=='he'){
-      cy.get(selector,{timeout:60000}).contains(/^English$/,{timeout:60000}).should('exist')
-    } else{
-      cy.get(selector,{timeout:60000}).contains(/^עברית$/,{timeout:60000}).should('exist')
-    }
-  })
-})
+// Cypress.Commands.add('clickLanguage',(selector,classAttr,languageMode,language)=>{
+//   cy.then(()=>{
+//     if(classAttr!=languageMode){
+//       cy.log('Change to mode '+language)
+//       cy.get(selector,{timeout:60000}).contains(/^English$|^עברית$/g,{timeout:60000}).click({force: true});
+//     }
+//   }).then(()=>{
+//     if(languageMode=='he'){
+//       cy.get(selector,{timeout:60000}).contains(/^English$/,{timeout:60000}).should('exist')
+//     } else{
+//       cy.get(selector,{timeout:60000}).contains(/^עברית$/,{timeout:60000}).should('exist')
+//     }
+//   })
+// })
 
 Cypress.Commands.add('searchRunforReq',({text,language,delay})=>{
   cy.setLanguageMode({
