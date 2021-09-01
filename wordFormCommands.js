@@ -2,8 +2,6 @@
 
 Cypress.Commands.add('showAllWordForms',()=>{
     let num
-    const runout = ['Word forms selected', 'הטיות נבחרו']
-    const regex = new RegExp(`${runout.join('|')}`, 'g')
     cy.get('[id*="new-label-wordform"]',{timeout:60000}).contains(/Word forms selected|הטיות נבחרו/)
     .then(wordFormnum=>{
         //cy.wrap().should(regex)
