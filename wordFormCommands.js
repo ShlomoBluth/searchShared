@@ -1,6 +1,9 @@
+
+
 Cypress.Commands.add('showAllWordForms',()=>{
     let num
-    cy.get('[id*="new-label-wordform"]').then(wordFormnum=>{
+    cy.get('[id*="new-label-wordform"]').contains(/'Word forms selected'|'הטיות נבחרו'/g)
+    .then(wordFormnum=>{
         num=parseInt(wordFormnum.text())
     }).then(()=>{
         if(num!=0){
