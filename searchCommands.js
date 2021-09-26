@@ -66,13 +66,13 @@ Cypress.Commands.add('searchRun',({text,language,collection})=>{
   cy.intercept('**/lexemes').as('lexemesreq')
   cy.get('input[id="search_box"]').clear().type(text)
   cy.get('button[id="mobile_search_button"]').click({force:true})
-  cy.wait('@wordformsreq',{timeout:30000})
-  cy.wait('@textAnalysisreq',{timeout:30000})
-  cy.wait('@searchreq',{timeout:30000})
-  cy.wait('@booksreq',{timeout:30000})
+  cy.wait('@wordformsreq',{timeout:300000})
+  cy.wait('@textAnalysisreq',{timeout:300000})
+  cy.wait('@searchreq',{timeout:300000})
+  cy.wait('@booksreq',{timeout:300000})
   if(collection=='תנ"ך'){
-    cy.wait('@lexemesreq',{timeout:30000})
-    cy.wait('@relatedreq',{timeout:30000})
+    cy.wait('@lexemesreq',{timeout:300000})
+    cy.wait('@relatedreq',{timeout:300000})
   }
 })
   
