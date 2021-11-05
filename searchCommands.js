@@ -66,6 +66,24 @@ Cypress.Commands.add('searchRun',({text,language,collection})=>{
   cy.intercept('**/lexemes').as('lexemesreq')
   cy.get('input[id="search_box"]').clear().type(text)
   cy.get('button[id="mobile_search_button"]').click({force:true})
+  cy.waitForReq({collection: collection})
+  cy.sortedByRelevance(collection)
+})
+
+Cypress.Commands.add('sortedByRelevance',(collection)=>{
+  cy.document().its('body').find('#app').then(body=>{
+    if(body.find('p[class*="sort-drop-text"]').length>0){
+      cy.get('p[class*="sort-drop-text"]').children('span').click({force:true})
+      cy.get('div[class="drop-down-sort"]').should('exist')
+      cy.get('span').contains(/Relevance|רלוונטיות/g).click({force:true})
+      cy.get('p[class*="sort-drop-text"]').children('span')
+      .contains(/relevance|רלוונטיות/g).should('exist')
+      cy.waitForReq({collection: collection})
+    }
+  })
+})
+
+Cypress.Commands.add('waitForReq',({collection})=>{
   cy.wait('@wordformsreq',{timeout:300000})
   cy.wait('@textAnalysisreq',{timeout:300000})
   cy.wait('@searchreq',{timeout:300000})
@@ -74,19 +92,6 @@ Cypress.Commands.add('searchRun',({text,language,collection})=>{
     cy.wait('@lexemesreq',{timeout:300000})
     cy.wait('@relatedreq',{timeout:300000})
   }
-  cy.sortedByRelevance()
-})
-
-Cypress.Commands.add('sortedByRelevance',()=>{
-  cy.document().its('body').find('#app').then(body=>{
-    if(body.find('p[class*="sort-drop-text"]').length>0){
-      cy.get('p[class*="sort-drop-text"]').children('span').click({force:true})
-      cy.get('div[class="drop-down-sort"]').should('exist')
-      cy.get('span').contains(/Relevance|רלוונטיות/g).click({force:true})
-      cy.get('p[class*="sort-drop-text"]').children('span')
-      .contains(/relevance|רלוונטיות/g).should('exist')
-    }
-  })
 })
   
 Cypress.Commands.add('clearInput',()=>{
