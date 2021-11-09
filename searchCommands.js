@@ -67,7 +67,7 @@ Cypress.Commands.add('searchRun',({text,language,collection})=>{
   cy.get('input[id="search_box"]').clear().type(text)
   cy.get('button[id="mobile_search_button"]').click({force:true})
   cy.waitForReq({collection: collection})
-  //cy.sortedByRelevance(collection)
+  cy.sortedByRelevance(collection)
 })
 
 Cypress.Commands.add('sortedByRelevance',(collection)=>{
