@@ -71,14 +71,23 @@ Cypress.Commands.add('searchRun',({text,language,collection})=>{
 })
 
 Cypress.Commands.add('sortedByRelevance',(collection)=>{
+  let sortStr=''
   cy.document().its('body').find('#app').then(body=>{
     if(body.find('p[class*="sort-drop-text"]').length>0){
+      cy.get('[class*="sort-drop-text"]').children('span').then(sort=>{
+        sortStr=sort.text()
+      })
       cy.get('p[class*="sort-drop-text"]').children('span').click({force:true})
       cy.get('div[class="drop-down-sort"]').should('exist')
       cy.get('span').contains(/Relevance|רלוונטיות/g).click({force:true})
       cy.get('p[class*="sort-drop-text"]').children('span')
-      .contains(/relevance|רלוונטיות/g).should('exist')
-      cy.waitForReq({collection: collection})
+      .contains(/relevance|רלוונטיות/g).should('exist').then(()=>{
+        cy.get('[class*="sort-drop-text"]').children('span').then(sort=>{
+          if(!sortStr.includes(sort.text())){
+            cy.waitForReq({collection: collection})
+          }
+        })
+      })
     }
   })
 })
