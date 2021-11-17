@@ -58,20 +58,25 @@ Cypress.Commands.add('searchRun',({text,language,collection})=>{
     mobileSelector:'lang-switch'
   })
   cy.log("Run search for "+text)
-  cy.intercept('**/wordforms').as('wordformsreq')
-  cy.intercept('**/textAnalysis').as('textAnalysisreq')
-  cy.intercept('**/related').as('relatedreq')
-  cy.intercept('**/search').as('searchreq')
-  cy.intercept('**/books').as('booksreq')
-  cy.intercept('**/lexemes').as('lexemesreq')
+  cy.nameReq('search')
   cy.get('input[id="search_box"]').clear().type(text)
   cy.get('button[id="mobile_search_button"]').click({force:true})
-  cy.waitForReq({collection: collection})
+  cy.waitForReq({collection: collection, trigger:'search'})
   cy.sortedByRelevance(collection)
+})
+
+Cypress.Commands.add('nameReq',(trigger)=>{
+  cy.intercept('**/wordforms').as('wordforms'+trigger)
+  cy.intercept('**/textAnalysis').as('textAnalysis'+trigger)
+  cy.intercept('**/related').as('related'+trigger)
+  cy.intercept('**/search').as('search'+trigger)
+  cy.intercept('**/books').as('books'+trigger)
+  cy.intercept('**/lexemes').as('lexemes'+trigger)
 })
 
 Cypress.Commands.add('sortedByRelevance',(collection)=>{
   let sortStr=''
+  cy.nameReq('sort')
   cy.document().its('body').find('#app').then(body=>{
     if(body.find('p[class*="sort-drop-text"]').length>0){
       cy.get('[class*="sort-drop-text"]').children('span').then(sort=>{
@@ -84,7 +89,7 @@ Cypress.Commands.add('sortedByRelevance',(collection)=>{
       .contains(/relevance|רלוונטיות/g).should('exist').then(()=>{
         cy.get('[class*="sort-drop-text"]').children('span').then(sort=>{
           if(!sortStr.includes(sort.text())){
-            cy.waitForReq({collection: collection})
+            cy.waitForReq({collection: collection, trigger:'search'})
           }
         })
       })
@@ -92,14 +97,14 @@ Cypress.Commands.add('sortedByRelevance',(collection)=>{
   })
 })
 
-Cypress.Commands.add('waitForReq',({collection})=>{
-  cy.wait('@wordformsreq',{timeout:300000})
-  cy.wait('@textAnalysisreq',{timeout:300000})
-  cy.wait('@searchreq',{timeout:300000})
-  cy.wait('@booksreq',{timeout:300000})
+Cypress.Commands.add('waitForReq',({collection,trigger})=>{
+  cy.wait('@wordforms'+trigger,{timeout:300000})
+  cy.wait('@textAnalysis'+trigger,{timeout:300000})
+  cy.wait('@search'+trigger,{timeout:300000})
+  cy.wait('@books'+trigger,{timeout:300000})
   if(collection=='תנ"ך'){
-    cy.wait('@lexemesreq',{timeout:300000})
-    cy.wait('@relatedreq',{timeout:300000})
+    cy.wait('@lexemes'+trigger,{timeout:300000})
+    cy.wait('@related'+trigger,{timeout:300000})
   }
 })
   
