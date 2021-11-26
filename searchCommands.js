@@ -93,6 +93,8 @@ Cypress.Commands.add('sortedByRelevance',(collection)=>{
           }
         })
       })
+      cy.get('div[class*="relevance-wrap"]').should('not.exist')
+      cy.get('ul[class*="result-list"]').should('exist')
     }
   })
 })
