@@ -84,7 +84,7 @@ Cypress.Commands.add('sortedByRelevance',(collection)=>{
       })
       cy.get('p[class*="sort-drop-text"]').children('span').click({force:true})
       cy.get('div[class="drop-down-sort"]').should('exist')
-      cy.get('span').contains(/Relevance|רלוונטיות/g).click({force:true})
+      cy.get(':nth-child(2) > .sort-link').contains(/relevance|הצג לפי רלוונטיות/g).click({force:true})
       cy.get('p[class*="sort-drop-text"]').children('span')
       .contains(/relevance|רלוונטיות/g).should('exist').then(()=>{
         cy.get('[class*="sort-drop-text"]').children('span').then(sort=>{
@@ -401,7 +401,15 @@ Cypress.Commands.add('removeDownloadsFiles',()=>{
 })
 
 Cypress.Commands.add('downloadFile',({type,shemotKdoshim})=>{
-  cy.get('[class*="dropdown-toggle"]').contains('הורדה').click({force: true})
+  cy.get('[class*="dropdown-toggle"]').contains('הורדת קובץ תוצאות').click({force: true})
+  // cy.url().then(url=>{
+  //   if(url.includes('https://merge--cranky-banach-377068.netlify.app/')){
+  //     cy.get('[class*="dropdown-toggle"]').contains('הורדת קובץ תוצאות').click({force: true})
+  //   }else{
+  //     cy.get('[class*="dropdown-toggle"]').contains('הורדה').click({force: true})
+  //   }
+  // })
+  
     cy.get('p').contains('קובץ '+type).parent().within(()=>{
       cy.get('[type="radio"]').check({force:true})
     }).then(()=>{
