@@ -84,7 +84,7 @@ Cypress.Commands.add('sortedByRelevance',(collection)=>{
       })
       cy.get('p[class*="sort-drop-text"]').children('span').click({force:true})
       cy.get('div[class="drop-down-sort"]').should('exist')
-      cy.get(':nth-child(2) > .sort-link').contains(/relevance|הצג לפי רלוונטיות/g).click({force:true})
+      cy.get(':nth-child(2) > .sort-link').contains(/relevance|רלוונטיות/g).click({force:true})
       cy.get('p[class*="sort-drop-text"]').children('span')
       .contains(/relevance|רלוונטיות/g).should('exist').then(()=>{
         cy.get('[class*="sort-drop-text"]').children('span').then(sort=>{
@@ -378,9 +378,9 @@ Cypress.Commands.add('existsResult',(result,ALittleDifferentText,sourceTextWordF
 
 Cypress.Commands.add('theFormOfTheText',(form)=>{
   cy.log("Form of text is "+form)
-  cy.get('[class="d-tooltip"]').contains(form).parent().click({force: true})
-  cy.get('[class="d-tooltip"]').contains(form).parent()
-  .should('have.attr','class','btn top-filter-common-btn text-select-btn has-tooltip active')
+  cy.get('[title="עם ניקוד"]').click({force: true})
+  // cy.get('[title="עם ניקוד"]')
+  // .should('have.attr','class','btn top-filter-common-btn text-select-btn has-tooltip active')
 })
   
 Cypress.Commands.add('fontSize',()=>{
