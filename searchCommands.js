@@ -84,15 +84,33 @@ Cypress.Commands.add('sortedByRelevance',(collection)=>{
       })
       cy.get('p[class*="sort-drop-text"]').children('span').click({force:true})
       cy.get('div[class="drop-down-sort"]').should('exist')
-      cy.get(':nth-child(2) > .sort-link').contains(/relevance|רלוונטיות/g).click({force:true})
-      cy.get('p[class*="sort-drop-text"]').children('span')
-      .contains(/relevance|רלוונטיות/g).should('exist').then(()=>{
-        cy.get('[class*="sort-drop-text"]').children('span').then(sort=>{
-          if(!sortStr.includes(sort.text())){
-            cy.waitForReq({collection: collection, trigger:'search'})
-          }
+      cy.url().then((url) => {
+        if(url.includes('https://talmudsearch.dicta.org.il') ||
+        url.includes('https://use-dicta-components-2--tender-hamilton-5d028e.netlify.app')){
+          cy.get('li').contains('relevance'|'רלוונטיות').click({force:true})
+          cy.get('p[class*="sort-drop-text"]').children('span')
+          .contains(/Relevance|רלוונטיות/i).should('exist').then(()=>{
+            cy.get('[class*="sort-drop-text"]').children('span').then(sort=>{
+              if(!sortStr.includes(sort.text())){
+                cy.waitForReq({collection: collection, trigger:'search'})
+              }
+            })
+          })
+        }
+      else{
+        cy.get('li').contains(/Relevance|רלוונטיות/g).click({force:true})
+        cy.get(':nth-child(2) > .sort-link').children('span')
+        .contains(/Relevance|רלוונטיות/g).should('exist').then(()=>{
+          cy.get('[class*="sort-drop-text"]').children('span').then(sort=>{
+            if(!sortStr.includes(sort.text())){
+              cy.waitForReq({collection: collection, trigger:'search'})
+            }
+          })
         })
+      }
+
       })
+      
       cy.get('div[class*="relevance-wrap"]').should('not.exist')
       cy.get('ul[class*="result-list"]').should('exist')
     }
@@ -280,7 +298,7 @@ Cypress.Commands.add('existsInResult',(text)=>{
           cy.get('[class*="pagination__navigation"]').last().then($lastPage=>{
             //If last page
             if($lastPage.attr('class').includes('disabled')){
-              cy.log($exists).pause()
+              cy.log($exists)
               cy.get($exists).should('be.true') //expect($exists).to.be.true
             }else{
               //Next page
@@ -362,7 +380,7 @@ Cypress.Commands.add('existsResult',(result,ALittleDifferentText,sourceTextWordF
         return exists
       }
       cy.log(ALittleDifferentText)
-      cy.log(boldWords[0].textContent).pause()
+      cy.log(boldWords[0].textContent)
       if(sourceTextWordForms.find(x=>x===boldWords[0].textContent)&&
       boldWords[0].textContent!=ALittleDifferentText){
         exists=false
@@ -381,7 +399,15 @@ Cypress.Commands.add('existsResult',(result,ALittleDifferentText,sourceTextWordF
 
 Cypress.Commands.add('theFormOfTheText',(form)=>{
   cy.log("Form of text is "+form)
-  cy.get('[title="'+form+'"]').click({force: true})
+  cy.url().then((url) => {
+    cy.log('Current URL is: ' + url)
+    if(url.includes('https://talmudsearch.dicta.org.il') ||
+     url.includes('https://use-dicta-components-2--tender-hamilton-5d028e.netlify.app')){
+      cy.get('button').contains(form).click({force: true})
+    }else{
+      cy.get('[title="'+form+'"]').click({force: true})
+    }
+  })
   // cy.get('[title="עם ניקוד"]')
   // .should('have.attr','class','btn top-filter-common-btn text-select-btn has-tooltip active')
 })
@@ -394,9 +420,10 @@ Cypress.Commands.add('fontSize',()=>{
 
 Cypress.Commands.add('numberOfResultInPage',(number)=>{
   cy.get('[class*="page-toggle"]').click({force: true})
-  cy.get('[class="check-text"]').contains(number).siblings().within(()=>{
-    cy.get('[type="radio"]').check({force: true})
-  })
+  cy.get('[class="check-text"]').contains(number).siblings().click({force:true})
+  // .within(()=>{
+  //   cy.get('[type="radio"]').check({force: true})
+  // })
 })
 
 Cypress.Commands.add('removeDownloadsFiles',()=>{
@@ -404,7 +431,15 @@ Cypress.Commands.add('removeDownloadsFiles',()=>{
 })
 
 Cypress.Commands.add('downloadFile',({type,shemotKdoshim})=>{
-  cy.get('[title="הורדת קובץ תוצאות"]').click({force: true})
+  cy.url().then((url) => {
+    cy.log('Current URL is: ' + url)
+    if(url.includes('https://talmudsearch.dicta.org.il') ||
+     url.includes('https://use-dicta-components-2--tender-hamilton-5d028e.netlify.app')){
+      cy.get('button').contains('הורדת קובץ תוצאות').click({force: true})
+     }
+     else{
+      cy.get('[title="הורדת קובץ תוצאות"]').click({force: true})
+     }
   // cy.url().then(url=>{
   //   if(url.includes('https://merge--cranky-banach-377068.netlify.app/')){
   //     cy.get('[class*="dropdown-toggle"]').contains('הורדת קובץ תוצאות').click({force: true})
@@ -412,10 +447,9 @@ Cypress.Commands.add('downloadFile',({type,shemotKdoshim})=>{
   //     cy.get('[class*="dropdown-toggle"]').contains('הורדה').click({force: true})
   //   }
   // })
+    })
   
-    cy.get('p').contains('קובץ '+type).parent().within(()=>{
-      cy.get('[type="radio"]').check({force:true})
-    }).then(()=>{
+    cy.get('p').contains('קובץ '+type).parent().click({force:true}).then(()=>{
       if(shemotKdoshim===true){
         cy.get('p').contains('לא לכלול שמות קדושים').siblings('[class*="chek"]').within(()=>{
           cy.get('[type="checkbox"]').check({force:true})
