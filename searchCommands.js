@@ -280,6 +280,7 @@ Cypress.Commands.add('existsInResult',(text)=>{
           cy.get('[class*="pagination__navigation"]').last().then($lastPage=>{
             //If last page
             if($lastPage.attr('class').includes('disabled')){
+              cy.log($exists).pause()
               cy.get($exists).should('be.true') //expect($exists).to.be.true
             }else{
               //Next page
@@ -360,6 +361,8 @@ Cypress.Commands.add('existsResult',(result,ALittleDifferentText,sourceTextWordF
       if(boldWords.length==0){
         return exists
       }
+      cy.log(ALittleDifferentText)
+      cy.log(boldWords[0].textContent).pause()
       if(sourceTextWordForms.find(x=>x===boldWords[0].textContent)&&
       boldWords[0].textContent!=ALittleDifferentText){
         exists=false
@@ -378,7 +381,7 @@ Cypress.Commands.add('existsResult',(result,ALittleDifferentText,sourceTextWordF
 
 Cypress.Commands.add('theFormOfTheText',(form)=>{
   cy.log("Form of text is "+form)
-  cy.get('[title="עם ניקוד"]').click({force: true})
+  cy.get('[title="'+form+'"]').click({force: true})
   // cy.get('[title="עם ניקוד"]')
   // .should('have.attr','class','btn top-filter-common-btn text-select-btn has-tooltip active')
 })
@@ -401,7 +404,7 @@ Cypress.Commands.add('removeDownloadsFiles',()=>{
 })
 
 Cypress.Commands.add('downloadFile',({type,shemotKdoshim})=>{
-  cy.get('[class*="dropdown-toggle"]').contains('הורדת קובץ תוצאות').click({force: true})
+  cy.get('[title="הורדת קובץ תוצאות"]').click({force: true})
   // cy.url().then(url=>{
   //   if(url.includes('https://merge--cranky-banach-377068.netlify.app/')){
   //     cy.get('[class*="dropdown-toggle"]').contains('הורדת קובץ תוצאות').click({force: true})
