@@ -394,9 +394,9 @@ Cypress.Commands.add('fontSize',()=>{
 
 Cypress.Commands.add('numberOfResultInPage',(number)=>{
   cy.get('[class*="page-toggle"]').click({force: true})
-      cy.get('[class="check-text"]').contains(number).siblings().within(()=>{
-          cy.get('[type="radio"]').check({force: true})
-      })
+  cy.get('[class="check-text"]').contains(number).siblings().within(()=>{
+    cy.get('[type="radio"]').check({force: true})
+  })
 })
 
 Cypress.Commands.add('removeDownloadsFiles',()=>{
