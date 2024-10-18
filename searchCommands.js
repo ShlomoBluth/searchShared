@@ -53,10 +53,10 @@ Cypress.Commands.add('searchRunforReq',({text,language,delay})=>{
   
   
 Cypress.Commands.add('searchRun',({text,language,collection})=>{
-  cy.setLanguageMode({
-    language:language,
-    mobileSelector:'lang-switch'
-  })
+  // cy.setLanguageMode({
+  //   language:language,
+  //   mobileSelector:'lang-switch'
+  // })
   cy.log("Run search for "+text)
   cy.nameReq('search')
   cy.get('input[id="search_box"]').clear().type(text)
