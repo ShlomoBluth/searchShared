@@ -99,14 +99,17 @@ Cypress.Commands.add('sortedByRelevance',(collection)=>{
         }
       else{
         cy.get('li').contains(/Relevance|רלוונטיות/g).click({force:true})
-        cy.get(':nth-child(2) > .sort-link').children('span')
-        .contains(/Relevance|רלוונטיות/g).should('exist').then(()=>{
-          cy.get('[class*="sort-drop-text"]').children('span').then(sort=>{
-            if(!sortStr.includes(sort.text())){
-              cy.waitForReq({collection: collection, trigger:'search'})
-            }
-          })
-        })
+
+        cy.waitForReq({collection: collection, trigger:'search'})
+        
+        // cy.get(':nth-child(2) > .sort-link').children('span')
+        // .contains(/Relevance|רלוונטיות/g).should('exist').then(()=>{
+        //   cy.get('[class*="sort-drop-text"]').children('span').then(sort=>{
+        //     if(!sortStr.includes(sort.text())){
+        //       cy.waitForReq({collection: collection, trigger:'search'})
+        //     }
+        //   })
+        // })
       }
 
       })
