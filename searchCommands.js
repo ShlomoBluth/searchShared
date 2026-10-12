@@ -44,7 +44,10 @@ Cypress.Commands.add('searchRunforReq',({text,language,delay})=>{
     mobileSelector:'lang-switch'
   })
   cy.log("Run search for "+text)
-  cy.get('input[id="search_box"]').clear().type(text)
+  cy.detectSearchSite()
+  cy.get('input[id="search_box"]').clear()
+  // on the new site, focusing the box swaps the landing layout for the results layout, so find the box again
+  cy.get('input[id="search_box"]:visible').type(text)
   cy.get('button[id="mobile_search_button"]').click({force:true})
   if(delay!=true){
     cy.get('[class*="loader"]').should('not.exist')
@@ -52,6 +55,22 @@ Cypress.Commands.add('searchRunforReq',({text,language,delay})=>{
 })
   
   
+// The rebuilt search site (new design) has no old-style search button in its start page.
+// Checked in the start page, when the search runs, and kept for the rest of the test
+let newSearchSite=false
+
+Cypress.Commands.add('detectSearchSite',()=>{
+  cy.document().then(doc=>{
+    newSearchSite=doc.querySelector('button[id="mobile_search_button"]')==null
+  })
+})
+
+Cypress.Commands.add('isNewSearchSite',()=>{
+  cy.then(()=>{
+    return newSearchSite
+  })
+})
+
 Cypress.Commands.add('searchRun',({text,language,collection})=>{
   // cy.setLanguageMode({
   //   language:language,
@@ -59,10 +78,21 @@ Cypress.Commands.add('searchRun',({text,language,collection})=>{
   // })
   cy.log("Run search for "+text)
   cy.nameReq('search')
-  cy.get('input[id="search_box"]').clear().type(text)
-  cy.get('button[id="mobile_search_button"]').click({force:true})
-  cy.waitForReq({collection: collection, trigger:'search'})
-  cy.sortedByRelevance(collection)
+  cy.detectSearchSite()
+  cy.get('input[id="search_box"]').clear()
+  // on the new site, focusing the box swaps the landing layout for the results layout, so find the box again
+  cy.get('input[id="search_box"]:visible').type(text)
+  cy.isNewSearchSite().then(newSite=>{
+    if(newSite){
+      cy.get('input[id="search_box"]:visible').type('{enter}')
+      //The number of results in the top shows once the search is done
+      cy.get('#result-count',{timeout:300000}).contains(/\d/).should('exist')
+    }else{
+      cy.get('button[id="mobile_search_button"]').click({force:true})
+      cy.waitForReq({collection: collection, trigger:'search'})
+      cy.sortedByRelevance(collection)
+    }
+  })
 })
 
 Cypress.Commands.add('nameReq',(trigger)=>{
@@ -139,11 +169,11 @@ Cypress.Commands.add('clearInput',()=>{
 Cypress.Commands.add('resultList',(tests,data,textNumbers)=>{
   let res=[]
   //Number of result in the page
-  cy.get('.result-list>li').then(list=>{
+  cy.get('.result-list > li, .result-list > div').then(list=>{
     res.push(list.length)
   })
   //Each result in the page
-  cy.get('.result-list > li').each(result=>{
+  cy.get('.result-list > li, .result-list > div').each(result=>{
     if(tests=='wordForms'){
       cy.resultContainsWordsForm(data,result)
     }else if(tests=='wordFormsConsecutive'){
@@ -176,7 +206,7 @@ Cypress.Commands.add('resultPagination',({tests='',data,textNumbers})=>{
     }).then(()=>{
        //Loop through each page
       for(let i=2;i<=numberOfPages;i++){    
-        cy.get('ul[class="pagination"] > li').last().children('button').click({force: true})
+        cy.nextResultsPage(i)
         cy.resultList(tests,data,textNumbers).then(res=>{
           numOfResults=numOfResults+res[0]
           textNumbers=res[1]
@@ -194,13 +224,37 @@ Cypress.Commands.add('resultPagination',({tests='',data,textNumbers})=>{
       expect(textNumbers).eq(numOfResults)
     }
     //The number of results is equal to the number in the top
-    cy.get('.f > span > :nth-child(2)').should('contain',numOfResults)
+    cy.isNewSearchSite().then(newSite=>{
+      if(newSite){
+        cy.get('#result-count').should('contain',numOfResults)
+      }else{
+        cy.get('.f > span > :nth-child(2)').should('contain',numOfResults)
+      }
+    })
+  })
+})
+
+Cypress.Commands.add('nextResultsPage',(pageNumber)=>{
+  cy.isNewSearchSite().then(newSite=>{
+    if(newSite){
+      cy.get('#pagination .v-pagination__next button').click({force: true})
+      cy.get('#pagination .v-pagination__item--is-active').contains(new RegExp('^\\s*'+pageNumber+'\\s*$'))
+      .should('exist')
+    }else{
+      cy.get('ul[class="pagination"] > li').last().children('button').click({force: true})
+    }
   })
 })
 
 Cypress.Commands.add('lastPage',()=>{
-  cy.get('[class*="pagination__item"]',{timeout:60000}).last().then($lastPage=>{
-    return parseInt($lastPage.text())
+  cy.isNewSearchSite().then(newSite=>{
+    //On the new site there is no pagination when all the results fit in one page
+    if(newSite&&Cypress.$('[class*="pagination__item"]').length==0){
+      return 1
+    }
+    cy.get('[class*="pagination__item"]',{timeout:60000}).last().then($lastPage=>{
+      return parseInt($lastPage.text())
+    })
   })
 })
 
@@ -402,19 +456,31 @@ Cypress.Commands.add('existsResult',(result,ALittleDifferentText,sourceTextWordF
 
 Cypress.Commands.add('theFormOfTheText',(form)=>{
   cy.log("Form of text is "+form)
-  cy.url().then((url) => {
-    cy.log('Current URL is: ' + url)
-    if(url.includes('https://talmudsearch.dicta.org.il') ||
-     url.includes('https://use-dicta-components-2--tender-hamilton-5d028e.netlify.app')){
-      cy.get('button').contains(form).click({force: true})
-    }else{
-      cy.get('[title="'+form+'"]').click({force: true})
+  cy.isNewSearchSite().then(newSite=>{
+    if(newSite){
+      //The form of the text is in the display settings
+      const nikudOptions={'עם טעמים':'BOTH','עם ניקוד':'NIKUD','ללא ניקוד':'NONE'}
+      cy.get('.mobile-filters .fa-gear').click({force: true})
+      cy.get('.v-overlay--active [id^="nikud-options"] input[value="'+nikudOptions[form]+'"]')
+      .check({force: true})
+      cy.get('.v-overlay--active button').contains('סגירה').click({force: true})
+      cy.get('.v-overlay--active').should('not.exist')
+      return
     }
+    cy.url().then((url) => {
+      cy.log('Current URL is: ' + url)
+      if(url.includes('https://talmudsearch.dicta.org.il') ||
+       url.includes('https://use-dicta-components-2--tender-hamilton-5d028e.netlify.app')){
+        cy.get('button').contains(form).click({force: true})
+      }else{
+        cy.get('[title="'+form+'"]').click({force: true})
+      }
+    })
   })
   // cy.get('[title="עם ניקוד"]')
   // .should('have.attr','class','btn top-filter-common-btn text-select-btn has-tooltip active')
 })
-  
+
 Cypress.Commands.add('fontSize',()=>{
   cy.get('[class="reset-line-height"]').then(text=>{
     return parseInt(text.css('font-size'))

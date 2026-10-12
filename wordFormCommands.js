@@ -1,6 +1,15 @@
 
 
 Cypress.Commands.add('showAllWordForms',()=>{
+    cy.isNewSearchSite().then(newSite=>{
+        //On the new site all the word forms show when the word forms window opens
+        if(!newSite){
+            cy.showAllWordFormsOldSite()
+        }
+    })
+})
+
+Cypress.Commands.add('showAllWordFormsOldSite',()=>{
     let num
     cy.get('[id*="new-label-wordform"]',{timeout:60000}).contains(/Word forms selected|הטיות נבחרו/)
     .then(wordFormnum=>{
@@ -41,6 +50,35 @@ Cypress.Commands.add('showAllWordForms',()=>{
 })
 
 Cypress.Commands.add('eachSelectedWordFormMatrix',()=>{
+    cy.isNewSearchSite().then(newSite=>{
+        if(newSite){
+            cy.eachSelectedWordFormMatrixNewSite()
+        }else{
+            cy.eachSelectedWordFormMatrixOldSite()
+        }
+    })
+})
+
+//On the new site the word forms are chips in a window, a section for each word in the search
+Cypress.Commands.add('eachSelectedWordFormMatrixNewSite',()=>{
+    let wordFormsMatrix=[]
+    cy.get('.mobile-filters .v-chip').contains('הטיות').click({force:true})
+    cy.get('.v-overlay--active .v-chip',{timeout:60000}).should('exist')
+    cy.get('.v-overlay--active h5').filter(':contains("הטיות של")').each($title=>{
+        //The closest block around the title that has the word forms of the word
+        const $word=$title.parents().filter((i,el)=>Cypress.$(el).find('.v-chip').length>0).first()
+        const $selected=$word.find('.v-chip[class*="bg-blue"]')
+        //When no word form is marked the search is for all of them
+        const $wordForms=$selected.length>0?$selected:$word.find('.v-chip')
+        wordFormsMatrix.push([...$wordForms].map(wordForm=>wordForm.textContent.trim()))
+    })
+    cy.get('.v-overlay--active button').contains('הצג תוצאות').click({force:true})
+    cy.get('.v-overlay--active').should('not.exist').then(()=>{
+        return wordFormsMatrix
+    })
+})
+
+Cypress.Commands.add('eachSelectedWordFormMatrixOldSite',()=>{
     let wordFormsMatrix=[]
     cy.document().its('body').find('#app').then($body=>{
         if($body.find('[class="inner-accordion-li inner-li"]').length>0){
